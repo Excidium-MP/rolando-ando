@@ -1,53 +1,72 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+import type { TextStyle } from 'react-native';
 
-import { Platform } from 'react-native';
+export type BeltColor = 'white' | 'blue' | 'purple' | 'brown' | 'black';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+export type BeltTheme = {
+  name: string;
+  accent: string;
+  accentSoft: string;
+  tag: string;
+  tagBg: string;
+  stripe: string;
+};
 
-export const Colors = {
+export const BELT_THEMES: Record<BeltColor, BeltTheme> = {
+  white: { name: 'White', accent: '#0E0E0E', accentSoft: '#F5F2EC', tag: '#1A1A1A', tagBg: '#F0EDE7', stripe: '#1A1A1A' },
+  blue: { name: 'Blue', accent: '#1E5BA8', accentSoft: '#E8F0FA', tag: '#1E5BA8', tagBg: '#E8F0FA', stripe: '#1E5BA8' },
+  purple: { name: 'Purple', accent: '#5B3A8C', accentSoft: '#EFEAF5', tag: '#5B3A8C', tagBg: '#EFEAF5', stripe: '#5B3A8C' },
+  brown: { name: 'Brown', accent: '#6B4423', accentSoft: '#F1EAE2', tag: '#6B4423', tagBg: '#F1EAE2', stripe: '#6B4423' },
+  black: { name: 'Black', accent: '#1A1A1A', accentSoft: '#EDEAE5', tag: '#1A1A1A', tagBg: '#EDEAE5', stripe: '#1A1A1A' },
+};
+
+export type Surface = {
+  bg: string;
+  bgElev: string;
+  bgInset: string;
+  text: string;
+  textMuted: string;
+  textDim: string;
+  border: string;
+  borderStrong: string;
+  chip: string;
+  overlay: string;
+};
+
+export const SURFACES: Record<'light' | 'dark', Surface> = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    bg: '#FAF8F3',
+    bgElev: '#FFFFFF',
+    bgInset: '#F2EFE8',
+    text: '#1A1815',
+    textMuted: '#6B665C',
+    textDim: '#9A958A',
+    border: 'rgba(26,24,21,0.08)',
+    borderStrong: 'rgba(26,24,21,0.14)',
+    chip: '#F0EDE7',
+    overlay: 'rgba(26,24,21,0.04)',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    bg: '#15140F',
+    bgElev: '#1F1D17',
+    bgInset: '#0F0E0A',
+    text: '#F2EFE8',
+    textMuted: '#A8A296',
+    textDim: '#6B665C',
+    border: 'rgba(242,239,232,0.08)',
+    borderStrong: 'rgba(242,239,232,0.14)',
+    chip: '#28251E',
+    overlay: 'rgba(242,239,232,0.04)',
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+export const TYPE: Record<'display' | 'ui' | 'mono', TextStyle> = {
+  display: { fontFamily: 'InstrumentSerif_400Regular', letterSpacing: -0.3 },
+  ui: { fontFamily: 'Geist_400Regular' },
+  mono: { fontFamily: 'GeistMono_400Regular' },
+};
+
+export const ACCENT_DANGER = '#E8584C';
+export const ACCENT_SUCCESS = '#3FB872';
+export const ACCENT_WARN = '#FFC857';
+
+export type ThemeBundle = { surface: Surface; theme: BeltTheme; isDark: boolean };
