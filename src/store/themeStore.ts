@@ -1,29 +1,36 @@
 import { create } from 'zustand';
 
-import { BELT_THEMES, SURFACES, type BeltColor, type ThemeBundle } from '@/constants/theme';
+import {
+  ACCENT_THEMES,
+  SURFACES,
+  type AccentColor,
+  type ThemeBundle,
+} from '@/constants/theme';
 
 type ThemeState = {
-  beltTheme: BeltColor;
+  accentTheme: AccentColor;
   isDark: boolean;
-  setBeltTheme: (b: BeltColor) => void;
+  setAccentTheme: (a: AccentColor) => void;
   setDark: (d: boolean) => void;
   toggleDark: () => void;
 };
 
+// v2 ships dark + red as the baked-in defaults. The setters and light tokens
+// stay so a future settings screen can flip these without re-touching theming.
 export const useThemeStore = create<ThemeState>((set) => ({
-  beltTheme: 'blue',
-  isDark: false,
-  setBeltTheme: (beltTheme) => set({ beltTheme }),
+  accentTheme: 'red',
+  isDark: true,
+  setAccentTheme: (accentTheme) => set({ accentTheme }),
   setDark: (isDark) => set({ isDark }),
   toggleDark: () => set((s) => ({ isDark: !s.isDark })),
 }));
 
 export function useTheme(): ThemeBundle {
-  const beltTheme = useThemeStore((s) => s.beltTheme);
+  const accentTheme = useThemeStore((s) => s.accentTheme);
   const isDark = useThemeStore((s) => s.isDark);
   return {
     surface: SURFACES[isDark ? 'dark' : 'light'],
-    theme: BELT_THEMES[beltTheme],
+    theme: ACCENT_THEMES[accentTheme],
     isDark,
   };
 }

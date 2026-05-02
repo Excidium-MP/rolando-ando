@@ -5,79 +5,81 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { BeltBar } from '@/components/BeltBar';
+import { GlassCard } from '@/components/GlassCard';
+import { GlassIconBtn } from '@/components/GlassIconBtn';
 import { Icon } from '@/components/Icon';
-import { IconButton } from '@/components/IconButton';
+import { ScreenContainer } from '@/components/ScreenContainer';
 import { TYPE } from '@/constants/theme';
 import { MESSAGES, PEOPLE } from '@/lib/mockData';
 import { useTheme } from '@/store/themeStore';
 
 export default function MessagesScreen() {
-  const { surface, theme } = useTheme();
+  const { surface, theme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1, backgroundColor: surface.bg }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
+    <ScreenContainer bg={surface.bg} maxWidth={620}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 130 }} showsVerticalScrollIndicator={false}>
         <View
           style={{
             paddingTop: insets.top + 10,
-            paddingHorizontal: 20,
+            paddingHorizontal: 16,
             paddingBottom: 12,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
-          <Text style={{ ...TYPE.display, fontSize: 30, color: surface.text, letterSpacing: -0.6 }}>
+          <Text style={{ ...TYPE.display, fontSize: 26, color: surface.text, letterSpacing: -0.6 }}>
             Messages
           </Text>
-          <IconButton surface={surface}>
-            <Icon.plus size={20} color={surface.text} />
-          </IconButton>
+          <GlassIconBtn surface={surface} isDark={isDark}>
+            <Icon.plus size={18} color={surface.text} />
+          </GlassIconBtn>
         </View>
 
-        <View style={{ paddingHorizontal: 20, paddingBottom: 12 }}>
-          <View
-            style={{
-              backgroundColor: surface.chip,
-              borderRadius: 12,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <Icon.search size={16} color={surface.textDim} />
-            <Text style={{ ...TYPE.ui, fontSize: 14, color: surface.textDim }}>Search messages</Text>
-          </View>
+        <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+          <GlassCard surface={surface} padding={0} radius={12}>
+            <View
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 9,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <Icon.search size={14} color={surface.textDim} />
+              <Text style={{ ...TYPE.ui, fontSize: 13, color: surface.textDim }}>Search</Text>
+            </View>
+          </GlassCard>
         </View>
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 14, gap: 14 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 12, gap: 12 }}
         >
           {PEOPLE.slice(0, 6).map((p) => (
-            <View key={p.id} style={{ width: 56, alignItems: 'center' }}>
+            <View key={p.id} style={{ width: 50, alignItems: 'center' }}>
               <View>
-                <Avatar src={p.avatar} size={52} />
+                <Avatar src={p.avatar} size={46} />
                 <View
                   style={{
                     position: 'absolute',
                     bottom: 0,
-                    right: 0,
-                    width: 14,
-                    height: 14,
-                    borderRadius: 7,
-                    backgroundColor: '#3FB872',
+                    right: -1,
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: '#22C55E',
                     borderWidth: 2,
                     borderColor: surface.bg,
                   }}
                 />
               </View>
-              <Text style={{ ...TYPE.ui, fontSize: 11, color: surface.textMuted, marginTop: 4 }}>
+              <Text style={{ ...TYPE.ui, fontSize: 10, color: surface.textDim, marginTop: 3 }}>
                 {p.name.split(' ')[0]}
               </Text>
             </View>
@@ -89,42 +91,43 @@ export default function MessagesScreen() {
             <Pressable
               key={m.id}
               onPress={() => router.push(`/chat/${m.id}`)}
-              style={({ pressed }) => ({
-                paddingHorizontal: 14,
-                paddingVertical: 12,
+              style={({ pressed, hovered }) => ({
+                paddingHorizontal: 10,
+                paddingVertical: 10,
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 12,
+                gap: 10,
                 borderRadius: 14,
-                backgroundColor: m.unread > 0 ? theme.tagBg + '60' : 'transparent',
+                backgroundColor:
+                  m.unread > 0 ? theme.tagBg : hovered ? surface.bgElev : 'transparent',
                 opacity: pressed ? 0.7 : 1,
               })}
             >
               <View>
-                <Avatar src={m.avatar} size={52} />
+                <Avatar src={m.avatar} size={46} />
                 {m.online && (
                   <View
                     style={{
                       position: 'absolute',
                       bottom: 0,
-                      right: 0,
-                      width: 14,
-                      height: 14,
-                      borderRadius: 7,
-                      backgroundColor: '#3FB872',
+                      right: -1,
+                      width: 12,
+                      height: 12,
+                      borderRadius: 6,
+                      backgroundColor: '#22C55E',
                       borderWidth: 2,
-                      borderColor: surface.bg,
+                      borderColor: m.unread > 0 ? surface.bgInset : surface.bg,
                     }}
                   />
                 )}
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
                   <Text
                     numberOfLines={1}
                     style={{
                       ...TYPE.ui,
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: m.unread > 0 ? '700' : '600',
                       color: surface.text,
                       flexShrink: 1,
@@ -132,12 +135,12 @@ export default function MessagesScreen() {
                   >
                     {m.name}
                   </Text>
-                  {m.belt && <BeltBar color={m.belt} stripes={m.stripes ?? 0} width={20} height={5} />}
+                  {m.belt && <BeltBar color={m.belt} stripes={m.stripes ?? 0} width={18} height={4} />}
                   {m.isGym && (
                     <View
                       style={{
                         backgroundColor: theme.tagBg,
-                        paddingHorizontal: 5,
+                        paddingHorizontal: 4,
                         paddingVertical: 1,
                         borderRadius: 3,
                       }}
@@ -145,10 +148,10 @@ export default function MessagesScreen() {
                       <Text
                         style={{
                           ...TYPE.ui,
-                          fontSize: 9,
-                          fontWeight: '600',
+                          fontSize: 8,
+                          fontWeight: '700',
                           color: theme.tag,
-                          letterSpacing: 0.3,
+                          letterSpacing: 0.4,
                         }}
                       >
                         GYM
@@ -160,22 +163,22 @@ export default function MessagesScreen() {
                   numberOfLines={1}
                   style={{
                     ...TYPE.ui,
-                    fontSize: 13,
+                    fontSize: 12,
                     color: m.unread > 0 ? surface.text : surface.textMuted,
                     fontWeight: m.unread > 0 ? '500' : '400',
-                    marginTop: 2,
+                    marginTop: 1,
                   }}
                 >
                   {m.last}
                 </Text>
               </View>
-              <View style={{ alignItems: 'flex-end', gap: 4 }}>
+              <View style={{ alignItems: 'flex-end', gap: 3 }}>
                 <Text
                   style={{
                     ...TYPE.ui,
-                    fontSize: 11,
+                    fontSize: 10,
                     color: m.unread > 0 ? theme.accent : surface.textDim,
-                    fontWeight: m.unread > 0 ? '600' : '400',
+                    fontWeight: m.unread > 0 ? '700' : '400',
                   }}
                 >
                   {m.time}
@@ -183,16 +186,16 @@ export default function MessagesScreen() {
                 {m.unread > 0 && (
                   <View
                     style={{
-                      minWidth: 18,
-                      height: 18,
-                      paddingHorizontal: 5,
-                      borderRadius: 9,
+                      minWidth: 16,
+                      height: 16,
+                      paddingHorizontal: 4,
+                      borderRadius: 8,
                       backgroundColor: theme.accent,
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Text style={{ ...TYPE.ui, fontSize: 11, fontWeight: '600', color: '#fff' }}>
+                    <Text style={{ ...TYPE.ui, fontSize: 10, fontWeight: '700', color: '#fff' }}>
                       {m.unread}
                     </Text>
                   </View>
@@ -202,6 +205,6 @@ export default function MessagesScreen() {
           ))}
         </View>
       </ScrollView>
-    </View>
+    </ScreenContainer>
   );
 }

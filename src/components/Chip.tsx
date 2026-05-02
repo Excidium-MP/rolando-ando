@@ -1,13 +1,13 @@
 import React from 'react';
 import { Text, View, type ViewStyle } from 'react-native';
 
-import { TYPE, type BeltTheme, type Surface } from '@/constants/theme';
+import { TYPE, type Surface, type Theme } from '@/constants/theme';
 
 type ChipProps = {
   children: React.ReactNode;
   tone?: 'neutral' | 'accent';
   surface: Surface;
-  theme: BeltTheme;
+  theme: Theme;
   style?: ViewStyle;
 };
 

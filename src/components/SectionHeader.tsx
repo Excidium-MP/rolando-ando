@@ -1,14 +1,14 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { TYPE, type BeltTheme, type Surface } from '@/constants/theme';
+import { TYPE, type Surface, type Theme } from '@/constants/theme';
 
 type SectionHeaderProps = {
   title: string;
   action?: string;
   onActionPress?: () => void;
   surface: Surface;
-  theme: BeltTheme;
+  theme: Theme;
 };
 
 export function SectionHeader({ title, action, onActionPress, surface, theme }: SectionHeaderProps) {
