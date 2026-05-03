@@ -6,7 +6,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "gen": "echo 'TODO Phase 0: supabase gen types typescript --linked > src/types.ts'",
+    "gen": "supabase gen types typescript --linked --schema public > src/types.ts",
+    "link": "supabase link --project-ref $SUPABASE_PROJECT_REF",
+    "push": "supabase db push",
+    "diff": "supabase db diff",
+    "status": "supabase migration list",
     "lint": "echo 'noop'",
     "typecheck": "tsc --noEmit"
   },

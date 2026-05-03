@@ -1,0 +1,54 @@
+# Supabase project config (CLI). Most values matter only for `supabase start`
+# (local Docker stack); cloud projects use settings from the dashboard. The
+# project_id below is the local stack name, not the cloud project ref. Cloud
+# linking happens via `supabase link --project-ref <ref>` and writes to a
+# gitignored .supabase/ directory.
+
+project_id = "mma-finder"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.pooler]
+enabled = false
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["mmafinder://*", "exp://*"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[edge_runtime]
+enabled = true
+policy = "oneshot"

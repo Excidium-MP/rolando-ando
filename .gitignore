@@ -27,6 +27,11 @@ expo-env.d.ts
 # Claude Code local state
 .claude/
 
+# Supabase CLI link state (per-developer; project ref already in config.toml)
+**/.supabase/
+**/.branches/
+**/.temp/
+
 # debug
 npm-debug.*
 yarn-debug.*

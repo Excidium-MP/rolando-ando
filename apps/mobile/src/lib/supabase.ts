@@ -2,6 +2,7 @@ import 'react-native-url-polyfill/auto';
 
 import * as SecureStore from 'expo-secure-store';
 import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@mma-finder/db';
 
 // SecureStore caps each value at ~2KB. Auth session JSON usually fits, but if
 // you ever see a "Value too large" warning, swap to AsyncStorage for the
@@ -21,7 +22,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: ExpoSecureStoreAdapter,
     autoRefreshToken: true,
