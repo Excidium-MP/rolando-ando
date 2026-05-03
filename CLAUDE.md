@@ -1,9 +1,11 @@
-# Project: MMA Finder (repo codename `rolando-ando`)
+# Project: Open Tatame (repo codename `rolando-ando`, internal packages `@mma-finder/*`)
 
 A two-surface platform for the martial arts community, competing with bjjlink.com.
 
-1. **MMA Finder** (consumer mobile app, free): find nearby gyms, discover open mats, log training, follow grapplers, message, share progress. Multi-discipline (BJJ, MMA, Muay Thai, boxing, wrestling, kickboxing, gi, no-gi).
-2. **MMA Finder Admin** (academy SaaS, paid B2B, Phase 2+): student management, class scheduling, attendance, billing, curriculum, retail, payroll, analytics, kiosk check-in.
+1. **Open Tatame** (consumer mobile app, free): find nearby gyms, discover open mats, log training, follow grapplers, message, share progress. Multi-discipline (BJJ, MMA, Muay Thai, boxing, wrestling, kickboxing, gi, no-gi).
+2. **Open Tatame Studio** (academy SaaS, paid B2B, Phase 2+): student management, class scheduling, attendance, billing, curriculum, retail, payroll, analytics, kiosk check-in.
+
+Repo folder name `rolando-ando` and internal npm package names (`@mma-finder/mobile`, `@mma-finder/db`, `@mma-finder/ui`, `@mma-finder/api`) intentionally keep their old identifiers so EAS dev clients keep working and refactors stay scoped to user-visible surfaces.
 
 Both surfaces share one Supabase backend. Repo folder name `rolando-ando` is a codename and stays as-is.
 

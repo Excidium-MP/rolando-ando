@@ -118,25 +118,25 @@ function ThemedRoot() {
       >
         <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
         <Stack.Screen name="(onboarding)" options={{ animation: 'fade' }} />
-        <Stack.Screen name="(tabs)" options={{ title: 'MMA Finder' }} />
+        <Stack.Screen name="(tabs)" options={{ title: 'Open Tatame' }} />
         <Stack.Screen
           name="gym/[id]"
-          options={{ animation: 'slide_from_right', title: 'Gym · MMA Finder' }}
+          options={{ animation: 'slide_from_right', title: 'Gym · Open Tatame' }}
         />
         <Stack.Screen
           name="openmat/[id]"
-          options={{ animation: 'slide_from_right', title: 'Open mat · MMA Finder' }}
+          options={{ animation: 'slide_from_right', title: 'Open mat · Open Tatame' }}
         />
         <Stack.Screen
           name="chat/[id]"
-          options={{ animation: 'slide_from_right', title: 'Chat · MMA Finder' }}
+          options={{ animation: 'slide_from_right', title: 'Chat · Open Tatame' }}
         />
         <Stack.Screen
           name="post"
           options={{
             presentation: 'modal',
             animation: 'slide_from_bottom',
-            title: 'New post · MMA Finder',
+            title: 'New post · Open Tatame',
           }}
         />
       </Stack>

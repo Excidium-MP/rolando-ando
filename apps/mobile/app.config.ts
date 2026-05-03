@@ -3,7 +3,10 @@ import type { ExpoConfig } from 'expo/config';
 const BUNDLE_ID = 'com.manuel.rolandoando';
 
 const config: ExpoConfig = {
-  name: 'rolando-ando',
+  // Display name shown under the icon and in window titles. Slug and bundle
+  // identifier intentionally stay as the codename ("rolando-ando") so EAS
+  // dev clients keep installing without a fresh build.
+  name: 'Open Tatame',
   slug: 'rolando-ando',
   version: '0.1.0',
   orientation: 'portrait',

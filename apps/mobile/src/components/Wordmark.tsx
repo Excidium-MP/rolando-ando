@@ -10,7 +10,7 @@ type WordmarkProps = {
   style?: TextStyle;
 };
 
-// "Rolando." with the period tinted to the active accent. Used as the
+// "Open Tatame." with the period tinted to the active accent. Used as the
 // home wordmark on the Feed header and on top-of-screen brand moments.
 export function Wordmark({ size = 26, color, accent, style }: WordmarkProps) {
   return (
@@ -27,7 +27,7 @@ export function Wordmark({ size = 26, color, accent, style }: WordmarkProps) {
         style,
       ]}
     >
-      Rolando<Text style={{ color: accent }}>.</Text>
+      Open Tatame<Text style={{ color: accent }}>.</Text>
     </Text>
   );
 }
