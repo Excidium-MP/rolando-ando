@@ -17,8 +17,9 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// Avoid Metro walking up the tree past root for unrelated modules. Combined
-// with nodeModulesPaths above, this forces a deterministic resolution order.
-config.resolver.disableHierarchicalLookup = true;
+// Note: do NOT set `disableHierarchicalLookup` for npm workspaces. That flag
+// is for pnpm (with its strict, content-addressed store). With npm hoisting,
+// some packages keep nested node_modules (e.g. react-native-reanimated nests
+// its own semver), and Metro must walk up to find them.
 
 module.exports = withNativeWind(config, { input: './global.css' });

@@ -1,17 +1,48 @@
 import 'react-native-url-polyfill/auto';
 
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
 import type { Database } from '@mma-finder/db';
 
-// SecureStore caps each value at ~2KB. Auth session JSON usually fits, but if
-// you ever see a "Value too large" warning, swap to AsyncStorage for the
-// session (it is non-sensitive once the device is unlocked).
+// Storage adapter has to handle three runtimes:
+//  - Native (iOS/Android): SecureStore (encrypted via Keychain/Keystore).
+//    Caps each value at ~2KB; session JWT fits.
+//  - Web (browser): AsyncStorage, which uses localStorage on web.
+//  - Web (SSR / static render): no localStorage, no Keychain. Memory store
+//    so the Supabase client can construct without crashing during the
+//    static export pass that Vercel runs at build time.
+const isServer = typeof window === 'undefined';
+
+const memoryStorage = (() => {
+  const data = new Map<string, string>();
+  return {
+    getItem: (key: string) => Promise.resolve(data.get(key) ?? null),
+    setItem: (key: string, value: string) => {
+      data.set(key, value);
+      return Promise.resolve();
+    },
+    removeItem: (key: string) => {
+      data.delete(key);
+      return Promise.resolve();
+    },
+  };
+})();
+
 const ExpoSecureStoreAdapter = {
   getItem: (key: string) => SecureStore.getItemAsync(key),
   setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
   removeItem: (key: string) => SecureStore.deleteItemAsync(key),
 };
+
+const storage =
+  Platform.OS === 'web'
+    ? isServer
+      ? memoryStorage
+      : AsyncStorage
+    : ExpoSecureStoreAdapter;
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -24,9 +55,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: ExpoSecureStoreAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
+    storage,
+    autoRefreshToken: !isServer,
+    persistSession: !isServer,
     detectSessionInUrl: false,
   },
 });
