@@ -21,6 +21,12 @@ expo-env.d.ts
 # Metro
 .metro-health-check*
 
+# Turborepo
+.turbo/
+
+# Claude Code local state
+.claude/
+
 # debug
 npm-debug.*
 yarn-debug.*
@@ -49,3 +55,5 @@ app-example
 /ios
 /android
 .expo-test-bundle/
+
+.vercel

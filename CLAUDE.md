@@ -1,13 +1,34 @@
-# Project: rolando-ando (Jiu Jitsu Mobile)
+# Project: MMA Finder (repo codename `rolando-ando`)
 
-A social platform for Jiu Jitsu practitioners. Find nearby teams, discover open mats, browse games and reviews.
+A two-surface platform for the martial arts community, competing with bjjlink.com.
 
-Status: prototype. Owner: Manuel. Platforms: iOS + Android.
+1. **MMA Finder** (consumer mobile app, free): find nearby gyms, discover open mats, log training, follow grapplers, message, share progress. Multi-discipline (BJJ, MMA, Muay Thai, boxing, wrestling, kickboxing, gi, no-gi).
+2. **MMA Finder Admin** (academy SaaS, paid B2B, Phase 2+): student management, class scheduling, attendance, billing, curriculum, retail, payroll, analytics, kiosk check-in.
+
+Both surfaces share one Supabase backend. Repo folder name `rolando-ando` is a codename and stays as-is.
+
+Status: prototype UI complete (mobile only), no real backend yet. Owner: Manuel, solo dev. Platforms: iOS + Android (mobile), web PWA (admin).
+
+## Roadmap
+
+Approved phased plan lives at `C:\Users\Pc\.claude\plans\how-would-you-build-lucky-cake.md`. Locked decisions (2026-05-03):
+
+- Anonymous browse for gyms / open mats / public feed; sign-in required to post, message, check in, follow.
+- Any verified user can create open-mat events; gym admins inherit edit rights when they claim their academy.
+- Per-discipline rank system (`user_ranks` table). User picks a primary discipline. BJJ uses belts + stripes (existing `BeltBar`); other disciplines use their own conventions.
+- Admin shell at MVP is Next.js PWA only (kiosk via fullscreen). No native admin app at v1.
+- SaaS pricing is flat per-academy per month.
+- Billing geography deferred. Launch US-only with Stripe Tax. Schema designed currency-agnostic.
 
 ## Stack
-Expo (managed) + React Native + TypeScript. Expo Router for navigation. NativeWind for styling. Supabase for backend (Postgres + Auth + Storage). React Query for server state, Zustand for client state. expo-secure-store for tokens, AsyncStorage for non-sensitive persistent state. EAS Build / Submit.
 
-## Folder structure
+**Current (mobile)**: Expo (managed) + React Native + TypeScript. Expo Router for navigation. NativeWind for styling. Supabase for backend (Postgres + Auth + Storage + Realtime + Edge Functions). React Query for server state, Zustand for client state. expo-secure-store for tokens, AsyncStorage for non-sensitive persistent state. EAS Build / Submit.
+
+**Planned (admin, Phase 2)**: Next.js 15 App Router + shadcn/ui, deployed on Vercel. Same Supabase backend.
+
+**Planned services**: Sentry (Phase 0), Resend for transactional email (Phase 1), Expo Push (Phase 1), Stripe + Stripe Connect (Phase 3), Stripe Terminal for retail POS (Phase 4).
+
+## Folder structure (current, single Expo app at root)
 ```
 /app                  Expo Router routes (file-based)
   /(auth)             Auth-only routes
@@ -31,6 +52,25 @@ eas.json              EAS Build profiles
 ```
 
 Path alias: `@/*` -> `./src/*`. Use `@/components/...`, `@/hooks/...`, etc.
+
+## Folder structure (target monorepo, Phase 0 in progress)
+```
+/apps
+  /mobile             Current Expo app, moved from root
+  /admin              Next.js 15 App Router (Phase 2)
+  /marketing          Next.js + MDX (Phase 5)
+/packages
+  /db                 Supabase migrations + generated types + zod schemas
+  /ui                 Shared design tokens + primitives (mobile + web)
+  /api                Shared React Query hooks + RPC wrappers
+/supabase             Edge functions + (until packages/db lands) migrations
+pnpm-workspace.yaml
+turbo.json
+```
+
+After conversion, the mobile path alias becomes `@/*` -> `./apps/mobile/src/*` (configured in `apps/mobile/tsconfig.json` and `babel.config.js`). Workspace deps imported as `@mma-finder/db`, `@mma-finder/ui`, `@mma-finder/api`.
+
+**Workspace tool: npm workspaces + Turborepo** (chosen over pnpm to avoid Metro symlink issues on Windows). npm 11+ supports workspaces natively, no global install needed.
 
 ## Coding conventions
 - TypeScript everywhere. No `any` unless justified in a comment.
@@ -65,11 +105,13 @@ Path alias: `@/*` -> `./src/*`. Use `@/components/...`, `@/hooks/...`, etc.
 - Server-only secrets go in Supabase Edge Functions or EAS Secrets.
 
 ## Database (Supabase)
-- All schema changes via migrations in `/supabase/migrations`.
+- All schema changes via migrations in `/supabase/migrations` (will move to `/packages/db/supabase/migrations` after Phase 0).
 - Every table has Row Level Security enabled. Default deny.
-- Multi-tenant tables include `user_id` with a matching RLS policy.
+- User-owned tables include `user_id` with a matching RLS policy.
+- Tenant-scoped tables (academy data: students, classes, attendance, billing, etc.) include `academy_id` and use the `is_academy_role(academy_id, roles[])` security-definer helper for RLS.
 - Tables: snake_case, plural. Every table has `created_at` and `updated_at`.
 - Indexes on every foreign key and on columns used in `WHERE`.
+- Anonymous (`anon` role) read access is allowed for: `gyms`, `events` (open mats), public `feed_posts`, public `profiles`. All write paths require `authenticated`.
 
 ## Native dependencies & permissions
 - Prefer Expo SDK modules over community packages when both exist.
@@ -85,10 +127,11 @@ Path alias: `@/*` -> `./src/*`. Use `@/components/...`, `@/hooks/...`, etc.
 - Comment new code in plain language. Reader is conceptually fluent but not deeply technical.
 - Flag tradeoffs honestly.
 - Never invent APIs, packages, or Expo modules. Verify they exist and match the current Expo SDK.
-- No em dashes in any output.
-- **Stop and ask** before touching: auth flows, payments, RLS policies, migrations on existing tables, native config (`app.config.ts`), permissions, or anything destructive.
+- No em dashes in any output. Use commas, parentheses, or split sentences.
+- **Stop and ask** before touching: auth flows, payments, RLS policies, migrations on existing tables, native config (`app.config.ts`), permissions, monorepo restructure, or anything destructive.
 - Native-aware: if a change requires a new native module, flag that a new dev client build is needed.
 - Platform check: confirm fixes work on both iOS and Android, or flag the platform-specific assumption.
+- Multi-discipline: do not assume BJJ-only. Schema, copy, and discoverability cover all disciplines listed in `src/constants/theme.ts`.
 
 ## Definition of Done
 A feature is done when:
@@ -107,6 +150,8 @@ A feature is done when:
 - [ ] README or this file updated if conventions changed
 
 ## Run commands
+
+**Current (pre-monorepo)**
 ```
 npm install
 npx expo start
@@ -116,4 +161,16 @@ npm run typecheck
 npm run lint
 eas build --profile development --platform ios
 eas build --profile development --platform android
+```
+
+**Target (after Phase 0 monorepo conversion, npm workspaces + Turborepo)**
+```
+npm install                          # installs all workspaces
+npm run dev -w @mma-finder/mobile    # start Expo dev server
+npm run dev -w @mma-finder/admin     # start Next.js (Phase 2)
+npm run gen -w @mma-finder/db        # regenerate Supabase types (Phase 0)
+npm run typecheck                    # turbo runs all packages
+npm run lint                         # turbo runs all packages
+npm run eas:dev:ios -w @mma-finder/mobile
+npm run eas:dev:android -w @mma-finder/mobile
 ```
