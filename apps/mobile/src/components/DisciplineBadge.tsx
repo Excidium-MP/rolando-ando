@@ -49,7 +49,9 @@ export function DisciplineBadge({ discipline, size = 'sm', style }: DisciplineBa
 }
 
 function normalize(input: string): DisciplineKey {
-  const k = input.toLowerCase().replace(/[\s-]/g, '');
+  // Strip whitespace, hyphens, and underscores so DB enum values (`muay_thai`,
+  // `no_gi`) and human strings ("Muay Thai", "No-Gi") collapse to the same key.
+  const k = input.toLowerCase().replace(/[\s_-]/g, '');
   if (k === 'nogi') return 'nogi';
   if (k === 'muaythai') return 'muayThai';
   if (k in DISCIPLINES) return k as DisciplineKey;
