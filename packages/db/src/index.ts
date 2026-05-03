@@ -21,6 +21,10 @@ export type AcademyMembership = Database['public']['Tables']['academy_membership
 export type AcademyMembershipInsert = Database['public']['Tables']['academy_memberships']['Insert'];
 export type AcademyMembershipUpdate = Database['public']['Tables']['academy_memberships']['Update'];
 
+export type Gym = Database['public']['Tables']['gyms']['Row'];
+export type GymInsert = Database['public']['Tables']['gyms']['Insert'];
+export type GymUpdate = Database['public']['Tables']['gyms']['Update'];
+
 // Enum aliases.
 export type Discipline = Database['public']['Enums']['discipline'];
 export type AcademyRole = Database['public']['Enums']['academy_role'];

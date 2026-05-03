@@ -89,6 +89,80 @@ export type Database = {
           },
         ]
       }
+      gyms: {
+        Row: {
+          academy_id: string | null
+          address: string | null
+          affiliation: string | null
+          city: string | null
+          country: string
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          founded_year: number | null
+          id: string
+          instagram_followers: number | null
+          instagram_handle: string | null
+          lat: number | null
+          lng: number | null
+          name: string
+          neighborhood: string | null
+          primary_discipline: Database["public"]["Enums"]["discipline"] | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          academy_id?: string | null
+          address?: string | null
+          affiliation?: string | null
+          city?: string | null
+          country?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          founded_year?: number | null
+          id?: string
+          instagram_followers?: number | null
+          instagram_handle?: string | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          neighborhood?: string | null
+          primary_discipline?: Database["public"]["Enums"]["discipline"] | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          academy_id?: string | null
+          address?: string | null
+          affiliation?: string | null
+          city?: string | null
+          country?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          founded_year?: number | null
+          id?: string
+          instagram_followers?: number | null
+          instagram_handle?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          neighborhood?: string | null
+          primary_discipline?: Database["public"]["Enums"]["discipline"] | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gyms_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
