@@ -10,6 +10,7 @@ import { Icon } from '@/components/Icon';
 import { BlurButton } from '@/components/IconButton';
 import { SectionHeader, Stat } from '@/components/SectionHeader';
 import { TYPE } from '@/constants/theme';
+import { useAuth } from '@/hooks/useAuth';
 import { GYMS, ME, PHOTOS } from '@/lib/mockData';
 import { useTheme } from '@/store/themeStore';
 
@@ -35,7 +36,14 @@ export default function ProfileScreen() {
   const { surface, theme } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { session, isLoaded } = useAuth();
   const [tab, setTab] = useState<(typeof TABS)[number]['k']>('posts');
+
+  // Anonymous browse: nothing personal to show. Surface a clear path to sign
+  // in instead of pretending the mocked profile belongs to no one.
+  if (isLoaded && !session) {
+    return <AnonymousProfile />;
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: surface.bg }}>
@@ -65,7 +73,7 @@ export default function ProfileScreen() {
             <BlurButton>
               <Icon.search size={18} color="#1A1815" />
             </BlurButton>
-            <BlurButton>
+            <BlurButton onPress={() => router.push('/settings')}>
               <Icon.more size={18} color="#1A1815" />
             </BlurButton>
           </View>
@@ -290,6 +298,98 @@ export default function ProfileScreen() {
           ))}
         </View>
       </ScrollView>
+    </View>
+  );
+}
+
+function AnonymousProfile() {
+  const { surface, theme } = useTheme();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: surface.bg,
+        paddingTop: insets.top + 24,
+        paddingHorizontal: 24,
+        paddingBottom: 120,
+        justifyContent: 'space-between',
+      }}
+    >
+      <View />
+      <View style={{ alignItems: 'center' }}>
+        <View
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            backgroundColor: theme.accentSoft,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 18,
+          }}
+        >
+          <Icon.user size={32} color={theme.accent} />
+        </View>
+        <Text
+          style={{
+            ...TYPE.display,
+            fontSize: 32,
+            color: surface.text,
+            letterSpacing: -0.6,
+            textAlign: 'center',
+          }}
+        >
+          Your mat journey
+        </Text>
+        <Text
+          style={{
+            ...TYPE.ui,
+            fontSize: 14,
+            color: surface.textMuted,
+            textAlign: 'center',
+            marginTop: 10,
+            lineHeight: 20,
+            maxWidth: 280,
+          }}
+        >
+          Sign in to track gyms visited, RSVP to open mats, share rolls, and message the community.
+        </Text>
+      </View>
+      <View style={{ gap: 10 }}>
+        <Pressable
+          onPress={() => router.push('/(auth)/sign-up')}
+          style={({ pressed }) => ({
+            backgroundColor: theme.accent,
+            borderRadius: 999,
+            paddingVertical: 16,
+            alignItems: 'center',
+            opacity: pressed ? 0.85 : 1,
+          })}
+        >
+          <Text style={{ ...TYPE.ui, color: '#fff', fontSize: 15, fontWeight: '600' }}>
+            Create an account
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push('/(auth)/sign-in')}
+          style={({ pressed }) => ({
+            backgroundColor: surface.bgElev,
+            borderRadius: 999,
+            paddingVertical: 16,
+            alignItems: 'center',
+            borderWidth: 0.5,
+            borderColor: surface.borderStrong,
+            opacity: pressed ? 0.85 : 1,
+          })}
+        >
+          <Text style={{ ...TYPE.ui, color: surface.text, fontSize: 15, fontWeight: '600' }}>
+            I already have an account
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

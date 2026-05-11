@@ -1,16 +1,44 @@
 import 'react-native-url-polyfill/auto';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient, type SupportedStorage } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
-import { createClient } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
 
-// SecureStore caps each value at ~2KB. Auth session JSON usually fits, but if
-// you ever see a "Value too large" warning, swap to AsyncStorage for the
-// session (it is non-sensitive once the device is unlocked).
-const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
+// Sessions need a different storage backend per environment:
+// - Native (iOS / Android):    expo-secure-store (Keychain / Keystore)
+// - Browser:                   AsyncStorage (-> localStorage)
+// - Node at build time (SSR):  in-memory, since localStorage does not exist
+//                              and there is no "user" to persist a session
+//                              for anyway during static pre-render.
+
+const ExpoSecureStoreAdapter: SupportedStorage = {
+  getItem: (key) => SecureStore.getItemAsync(key),
+  setItem: (key, value) => SecureStore.setItemAsync(key, value),
+  removeItem: (key) => SecureStore.deleteItemAsync(key),
 };
+
+const memoryStorage: SupportedStorage = (() => {
+  const store = new Map<string, string>();
+  return {
+    getItem: async (key) => store.get(key) ?? null,
+    setItem: async (key, value) => {
+      store.set(key, value);
+    },
+    removeItem: async (key) => {
+      store.delete(key);
+    },
+  };
+})();
+
+const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+const storage: SupportedStorage =
+  Platform.OS === 'web'
+    ? isBrowser
+      ? AsyncStorage
+      : memoryStorage
+    : ExpoSecureStoreAdapter;
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -23,9 +51,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: ExpoSecureStoreAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
+    storage,
+    // Disable session bits that are pointless during SSR pre-render.
+    autoRefreshToken: isBrowser || Platform.OS !== 'web',
+    persistSession: isBrowser || Platform.OS !== 'web',
     detectSessionInUrl: false,
   },
 });

@@ -17,6 +17,7 @@ import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { initAuth } from '@/lib/auth';
 import { useTheme } from '@/store/themeStore';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -31,6 +32,13 @@ export default function RootLayout() {
     Geist_600SemiBold,
     Geist_700Bold,
   });
+
+  useEffect(() => {
+    initAuth().catch(() => {
+      // initAuth swallows its own getSession errors; this catch is defensive
+      // in case Supabase env vars are missing and the client throws on import.
+    });
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -60,6 +68,9 @@ function ThemedRoot() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(auth)" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="(onboarding)" options={{ animation: 'fade' }} />
+        <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="gym/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="openmat/[id]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="chat/[id]" options={{ animation: 'slide_from_right' }} />

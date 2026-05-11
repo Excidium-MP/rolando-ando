@@ -1,11 +1,13 @@
 import { BlurView } from 'expo-blur';
-import { Tabs, useRouter } from 'expo-router';
+import { Redirect, Tabs, useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/Icon';
 import { TYPE } from '@/constants/theme';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 import { useTheme } from '@/store/themeStore';
 
 type TabKey = 'index' | 'discover' | 'messages' | 'profile';
@@ -18,6 +20,21 @@ const TABS: { key: TabKey; label: string; icon: IconName; iconFill: IconName }[]
 ];
 
 export default function TabsLayout() {
+  const { session, isLoaded, user } = useAuth();
+  // Only fetch the profile once auth is loaded and there is a user — anonymous
+  // users get to browse tabs without ever touching the profiles table.
+  const profileQuery = useProfile(isLoaded && user ? user.id : null);
+
+  if (!isLoaded) return null;
+  // Wait for the profile fetch so the tabs do not flash for one frame before
+  // the redirect to onboarding kicks in.
+  if (session && profileQuery.isLoading) return null;
+  // Logged-in users who haven't completed onboarding go straight there. The
+  // (onboarding) layout then redirects back here once is_onboarded flips true.
+  if (session && profileQuery.data && !profileQuery.data.is_onboarded) {
+    return <Redirect href="/(onboarding)/setup" />;
+  }
+
   return (
     <Tabs
       screenOptions={{ headerShown: false }}
